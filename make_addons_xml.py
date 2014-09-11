@@ -4,7 +4,7 @@
 import os
 import md5
 import zipfile
-
+import xml.etree.ElementTree as ET
 
 class Generator:
     """
@@ -57,22 +57,19 @@ class Generator:
                             break
 
                     # split lines for stripping
-                    xml_lines = content.splitlines()
+                    #xml_lines = content.splitlines()
                     # new addon
-                    addon_xml = ""
-                    # loop thru cleaning each line
-                    for line in xml_lines:
-                        
-                        # skip encoding format line
-                        if ( line.find( "<?xml" ) >= 0 ): continue
-                        # add line
-                        addon_xml += unicode( line.rstrip() + "\n", "utf-8" )
+
+                    root = ET.fromstring(content)
+                    addon_xml = ET.tostring(root)
+                    
+
                     # we succeeded so add to our final addons.xml text
                     addons_xml += addon_xml.rstrip() + "\n\n"
                 except Exception, e:
                     # missing or poorly formatted addon.xml
                     #print "Excluding %s for %s" % ( _path, e, )
-                    print "error"
+                    print e
                     break
         # clean and add closing tag
         addons_xml = addons_xml.strip() + u"\n</addons>\n"
